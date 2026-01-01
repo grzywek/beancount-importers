@@ -66,3 +66,13 @@ importers:
       wht_account: "Expenses:IB:WithholdingTax"
       fees_account: "Expenses:IB:Commissions"
       pnl_account: "Income:IB:PnL"
+
+  velobank:
+    importer: velobank
+    # For single account (all IBANs on statements go to the same account):
+    account: Assets:Bank:VeloBank
+    # For multiple accounts (different IBANs on statements):
+    # params:
+    #   account_map:
+    #     PL42156000132001525640000001: Assets:Bank:VeloBank:Main
+    #     PL42156000132001525640000002: Assets:Bank:VeloBank:Saving

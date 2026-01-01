@@ -86,6 +86,24 @@ def get_importer_config(type, account, currency, importer_params):
             importer=binance.Importer(**(importer_params or {})),
             emoji="🎰"
         )
+    elif type == "velobank":
+        # Native beancount_import source for VeloBank PDF statements
+        params = importer_params or {}
+        config = dict(
+            module="beancount_import.source.velobank",
+            # directory will be set by load_import_config_from_file
+            description="VeloBank PDF statement importer. Place PDF statements in the data directory.",
+            emoji="🏦"
+        )
+        # Add account configuration - either single account or account_map
+        if account:
+            config["assets_account"] = account
+        # Add optional account_map if provided
+        if "account_map" in params:
+            config["account_map"] = params["account_map"]
+        if "default_account" in params:
+            config["default_account"] = params["default_account"]
+        return config
     else:
         return None
 
