@@ -76,3 +76,17 @@ importers:
     #   account_map:
     #     PL42156000132001525640000001: Assets:Bank:VeloBank:Main
     #     PL42156000132001525640000002: Assets:Bank:VeloBank:Saving
+  enablebanking:
+    importer: enablebanking
+    params:
+      # Map IBAN_CURRENCY to Beancount account
+      # Only mapped accounts will be imported
+      account_map:
+        # Example: PL47114020040000370280642872_PLN: Assets:Bank:mBank:Main
+        # Add your accounts here
+      # Optional: limit which banks to import (subdirectory names)
+      # banks:
+      #   - mbank
+      #   - revolut
+
+

@@ -104,6 +104,24 @@ def get_importer_config(type, account, currency, importer_params):
         if "default_account" in params:
             config["default_account"] = params["default_account"]
         return config
+    elif type == "enablebanking":
+        # Native beancount_import source for EnableBanking JSON files
+        params = importer_params or {}
+        config = dict(
+            module="beancount_import.source.enablebanking",
+            # data_directory will be set by load_import_config_from_file
+            description="EnableBanking JSON importer. Uses JSON files from finance-dl enablebanking module.",
+            emoji="🏦"
+        )
+        # Add account_map and default_account
+        if "account_map" in params:
+            config["account_map"] = params["account_map"]
+        if "default_account" in params:
+            config["default_account"] = params["default_account"]
+        # Optional: filter which banks to import
+        if "banks" in params:
+            config["banks"] = params["banks"]
+        return config
     else:
         return None
 
