@@ -86,6 +86,24 @@ def get_importer_config(type, account, currency, importer_params):
             importer=binance.Importer(**(importer_params or {})),
             emoji="🎰"
         )
+    elif type == "trading212":
+        # Native beancount_import source - not a beangulp importer
+        # Uses data_directory (set by load_import_config_from_file) instead of directory
+        params = importer_params or {}
+        return dict(
+            module="beancount_import.source.trading212",
+            # data_directory will be set by load_import_config_from_file
+            cash_account=account,
+            investment_account=params.get("investment_account", f"{account}:Holdings"),
+            dividend_income_account=params.get("dividend_income_account", "Income:Dividends"),
+            capital_gains_account=params.get("capital_gains_account", "Income:Capital-Gains"),
+            fees_account=params.get("fees_account", "Expenses:Fees:Trading"),
+            transfer_account=params.get("transfer_account", "Assets:FIXME"),
+            lending_income_account=params.get("lending_income_account", "Income:Lending"),
+            interest_income_account=params.get("interest_income_account", "Income:Interest"),
+            description="Trading 212 API importer. Uses CSV exports and JSON files from finance-dl.",
+            emoji="📈"
+        )
     elif type == "velobank":
         # Native beancount_import source for VeloBank PDF statements
         params = importer_params or {}
@@ -131,14 +149,21 @@ def load_import_config_from_file(filename, data_dir, output_dir):
         parsed_config = yaml.safe_load(config_file)
         data_sources = []
         for key, params in parsed_config["importers"].items():
+            importer_type = params["importer"]
+            importer_config = get_importer_config(
+                importer_type,
+                params.get("account"),
+                params.get("currency"),
+                params.get("params"),
+            )
+            
+            if importer_config is None:
+                raise ValueError(f"Unknown importer type: {importer_type}")
+            
+            # All sources use 'directory' as the key
             config = dict(
                 directory=os.path.join(data_dir, key),
-                **get_importer_config(
-                    params["importer"],
-                    params.get("account"),
-                    params.get("currency"),
-                    params.get("params"),
-                )
+                **importer_config
             )
             data_sources.append(config)
         return dict(
