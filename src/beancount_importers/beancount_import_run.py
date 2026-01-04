@@ -149,29 +149,35 @@ def load_import_config_from_file(filename, data_dir, output_dir):
         parsed_config = yaml.safe_load(config_file)
         data_sources = []
         for key, params in parsed_config["importers"].items():
-            importer_type = params["importer"]
             importer_config = get_importer_config(
-                importer_type,
+                params["importer"],
                 params.get("account"),
                 params.get("currency"),
                 params.get("params"),
             )
             
             if importer_config is None:
-                raise ValueError(f"Unknown importer type: {importer_type}")
+                raise ValueError(f"Unknown importer type: {params['importer']}")
             
-            # All sources use 'directory' as the key
             config = dict(
                 directory=os.path.join(data_dir, key),
                 **importer_config
             )
             data_sources.append(config)
-        return dict(
+        
+        # Build result with global earliest_transaction if specified
+        result = dict(
             all=dict(
                 data_sources=data_sources,
                 transactions_output=os.path.join(output_dir, "transactions.bean"),
             )
         )
+        
+        # Add global earliest_transaction to config (passed to reconciler options)
+        if "earliest_transaction" in parsed_config:
+            result["earliest_transaction"] = parsed_config["earliest_transaction"]
+        
+        return result
 
 
 def get_import_config(data_dir, output_dir):
@@ -366,6 +372,7 @@ def main(
         ],
         price_output=os.path.join(output_dir, "prices.bean"),
         data_sources=import_config[target_config]["data_sources"],
+        earliest_transaction=import_config.get("earliest_transaction"),
     )
 
 

@@ -1,3 +1,7 @@
+# Global settings (optional)
+# Transactions before this date will be skipped for ALL importers
+# earliest_transaction: "2024-01-01"
+
 importers:
   # Importer key also corresponds to the subdirectory in the beancount_import_data
   # directory where the csv files will be looked up
