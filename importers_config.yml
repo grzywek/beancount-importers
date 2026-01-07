@@ -71,15 +71,27 @@ importers:
       fees_account: "Expenses:IB:Commissions"
       pnl_account: "Income:IB:PnL"
 
+
+  trading212:
+    importer: trading212
+    account: Assets:Broker:Trading212:USD
+    params:
+      investment_account: Assets:Broker:Trading212:Holdings
+      dividend_income_account: Income:Dividends:Trading212
+      capital_gains_account: Income:CapitalGains:Trading212
+      fees_account: Expenses:Fees:Trading:Trading212
+      lending_income_account: Income:Interest:StockLending:Trading212
+      interest_income_account: Income:Interest:Cash:Trading212
+
   velobank:
     importer: velobank
-    # For single account (all IBANs on statements go to the same account):
     account: Assets:Bank:VeloBank
     # For multiple accounts (different IBANs on statements):
     # params:
     #   account_map:
     #     PL42156000132001525640000001: Assets:Bank:VeloBank:Main
     #     PL42156000132001525640000002: Assets:Bank:VeloBank:Saving
+
   enablebanking:
     importer: enablebanking
     params:
@@ -92,5 +104,3 @@ importers:
       # banks:
       #   - mbank
       #   - revolut
-
-

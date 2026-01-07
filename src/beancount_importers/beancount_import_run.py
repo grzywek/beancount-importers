@@ -140,6 +140,24 @@ def get_importer_config(type, account, currency, importer_params):
         if "banks" in params:
             config["banks"] = params["banks"]
         return config
+    elif type == "zen":
+        # Native beancount_import source for Zen CSV statements
+        params = importer_params or {}
+        config = dict(
+            module="beancount_import.source.zen",
+            # directory will be set by load_import_config_from_file
+            description="Zen CSV statement importer. Place CSV statements in the data directory organized by year.",
+            emoji="💳"
+        )
+        # Add account configuration - either single account or account_map
+        if account:
+            config["default_account"] = account
+        # Add optional account_map if provided (IBAN_CURRENCY -> Account)
+        if "account_map" in params:
+            config["account_map"] = params["account_map"]
+        if "default_account" in params:
+            config["default_account"] = params["default_account"]
+        return config
     else:
         return None
 
