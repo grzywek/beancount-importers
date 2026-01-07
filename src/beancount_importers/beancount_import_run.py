@@ -372,6 +372,8 @@ def main(
         "balance_accounts.bean",
         "prices.bean",
         "ignored.bean",
+        "documents.bean",
+        "commodities.bean",
     ]:
         Path(os.path.join(output_dir, file)).touch()
 
@@ -389,6 +391,8 @@ def main(
             (".*", os.path.join(output_dir, "balance_accounts.bean")),
         ],
         price_output=os.path.join(output_dir, "prices.bean"),
+        document_output=os.path.join(output_dir, "documents.bean"),
+        commodity_output=os.path.join(output_dir, "commodities.bean"),
         data_sources=import_config[target_config]["data_sources"],
         earliest_transaction=import_config.get("earliest_transaction"),
     )
