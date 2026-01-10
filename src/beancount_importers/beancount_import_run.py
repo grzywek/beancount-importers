@@ -35,11 +35,17 @@ def get_importer_config(type, account, currency, importer_params):
             emoji="💵"
         )
     elif type == "revolut":
+        # Native beancount_import source for Revolut CSV/PDF statements
+        # Uses CSV as primary source with PDF for supplementary data (IBANs, rates, cards)
+        params = importer_params or {}
+        if "account_map" not in params:
+            raise ValueError("Revolut importer requires 'account_map' in params")
         return dict(
-            **common,
-            module="beancount_import.source.generic_importer_source_beangulp",
-            importer=import_revolut.get_importer(account, currency),
-            emoji="💵"
+            module="beancount_import.source.revolut",
+            # directory will be set by load_import_config_from_file
+            account_map=params["account_map"],
+            description="Revolut CSV/PDF importer. Place files in subdirectories: personal/, creditcard/, pro/",
+            emoji="💳"
         )
     elif type == "ibkr":
         return dict(
