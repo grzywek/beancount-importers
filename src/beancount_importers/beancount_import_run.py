@@ -95,19 +95,23 @@ def get_importer_config(type, account, currency, importer_params):
     elif type == "trading212":
         # Native beancount_import source - not a beangulp importer
         # Uses data_directory (set by load_import_config_from_file) instead of directory
+        # Vault/Trade model: deposits go to Vault (with PLN cost), trading uses Trade
         params = importer_params or {}
+        base_account = account or "Assets:Trading212:Cash"
         return dict(
             module="beancount_import.source.trading212",
             # data_directory will be set by load_import_config_from_file
-            cash_account=account,
-            investment_account=params.get("investment_account", f"{account}:Holdings"),
+            cash_vault_account=params.get("cash_vault_account", f"{base_account}:Vault"),
+            cash_trade_account=params.get("cash_trade_account", f"{base_account}:Trade"),
+            fx_income_account=params.get("fx_income_account", "Income:FX"),
+            investment_account=params.get("investment_account", f"{account}:Holdings" if account else "Assets:Trading212:Holdings"),
             dividend_income_account=params.get("dividend_income_account", "Income:Dividends"),
             capital_gains_account=params.get("capital_gains_account", "Income:Capital-Gains"),
             fees_account=params.get("fees_account", "Expenses:Fees:Trading"),
             transfer_account=params.get("transfer_account", "Assets:FIXME"),
             lending_income_account=params.get("lending_income_account", "Income:Lending"),
             interest_income_account=params.get("interest_income_account", "Income:Interest"),
-            description="Trading 212 API importer. Uses CSV exports and JSON files from finance-dl.",
+            description="Trading 212 API importer. Uses Vault/Trade model for FX tracking.",
             emoji="📈"
         )
     elif type == "velobank":
@@ -380,6 +384,7 @@ def main(
         "ignored.bean",
         "documents.bean",
         "commodities.bean",
+        "stock_splits.bean",
     ]:
         Path(os.path.join(output_dir, file)).touch()
 
@@ -399,6 +404,7 @@ def main(
         price_output=os.path.join(output_dir, "prices.bean"),
         document_output=os.path.join(output_dir, "documents.bean"),
         commodity_output=os.path.join(output_dir, "commodities.bean"),
+        custom_output=os.path.join(output_dir, "stock_splits.bean"),
         data_sources=import_config[target_config]["data_sources"],
         earliest_transaction=import_config.get("earliest_transaction"),
     )
